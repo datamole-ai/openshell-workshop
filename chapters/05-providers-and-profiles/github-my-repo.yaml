@@ -1,0 +1,73 @@
+id: github-my-repo # edited
+resource_version: 1
+display_name: GitHub My Repo # edited
+description: GitHub API and Git operations
+category: source_control
+credentials:
+  - name: api_token
+    description: GitHub token
+    env_vars:
+      - GITHUB_TOKEN
+      - GH_TOKEN
+    required: true
+    auth_style: bearer
+    header_name: authorization
+    query_param: ""
+endpoints:
+  - host: api.github.com # edited
+    port: 443
+    protocol: rest
+#   access: read-only
+    enforcement: enforce
+    # added
+    rules:
+      - allow:
+          # allows delete operations
+          # list allowed methods as dedicated rules if preferred
+          method: "*"
+          path: "/repos/<org>/<repo>/**"
+# - host: api.github.com
+#   port: 443
+#   protocol: graphql
+#   access: read-only
+#   enforcement: enforce
+#   path: /graphql
+  - host: github.com
+    port: 443
+    protocol: rest
+    enforcement: enforce
+#   rules:
+#     - allow:
+#         method: GET
+#         path: "**"
+#     - allow:
+#         method: HEAD
+#         path: "**"
+#     - allow:
+#         method: OPTIONS
+#         path: "**"
+#     - allow:
+#         method: POST
+#         path: /**/git-upload-pack
+    rules:
+      - allow:
+          method: GET
+          path: "/<org>/<repo>.git/info/refs*"
+      # enable git push as well
+      - allow:
+          method: POST
+          path: "/<org>/<repo>.git/git-upload-pack"
+      - allow:
+          method: POST
+          path: "/<org>/<repo>.git/git-receive-pack"
+binaries:
+  - /usr/bin/gh
+  - /usr/local/bin/gh
+  - /usr/bin/git
+  - /usr/local/bin/git
+inference_capable: false
+discovery:
+  credentials:
+    - api_token
+source: user
+scope: platform
